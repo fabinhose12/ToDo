@@ -11,4 +11,10 @@ export class CreateTaskDto {
   @IsString({ message: 'A descrição precisa ser um texto' })
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({ example: 'ALTA', description: 'Prioridade da tarefa (BAIXA, MEDIA, ALTA)' })
+  @IsString({ message: 'A prioridade precisa ser um texto' })
+  @IsOptional()
+  priority?: string;
+
 }
