@@ -18,17 +18,14 @@ async function bootstrap() {
 
   // Configuração do Swagger
   const config = new DocumentBuilder()
-    .setTitle('To-Do API')
-    .setDescription('Documentação interativa da API de Tarefas')
+    .setTitle('To-Do List API')
+    .setDescription('Documentação da API de Tarefas em NestJS')
     .setVersion('1.0')
-    .addTag('tasks')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(3000);
-  console.log('🚀 Aplicação rodando em: http://localhost:3000');
-  console.log('📚 Documentação Swagger disponível em: http://localhost:3000/api');
 }
 bootstrap();
