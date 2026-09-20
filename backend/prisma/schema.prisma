@@ -1,4 +1,4 @@
-generator client {
+npx prisma migrate dev --name add_users_and_relationsgenerator client {
   provider = "prisma-client-js"
 }
 
@@ -7,12 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos:
+  
+  // Tarefas que este utilizador criou
+  createdTasks  Task[] @relation("CreatedTasks")
+
+  // Tarefas que foram atribuídas a este utilizador
+  assignedTasks Task[] @relation("AssignedTasks")
+}
+
 model Task {
   id          String   @id @default(uuid())
   title       String
   description String?
-  priority    String   @default("MEDIA")
   isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Quem criou a tarefa
+
+  authorId String
+  author   User   @relation("CreatedTasks", fields: [authorId], references: [id])
+
+  // A quem a tarefa foi atribuída
+
+  assignedToId String
+  assignedTo   User   @relation("AssignedTasks", fields: [assignedToId], references: [id])
 }
