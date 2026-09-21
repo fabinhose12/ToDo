@@ -8,7 +8,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const userExists = await (this.prisma as any).user.findUnique({
+    const userExists = await this.prisma.user.findUnique({
       where: { email: createUserDto.email },
     });
 
@@ -18,26 +18,26 @@ export class UsersService {
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    const user = await (this.prisma as any).user.create({
+    const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
         password: hashedPassword,
       },
     });
 
-    // Remove a senhae do retorno por segurança
+    // Remove a senha do retorno por segurança
     const { password, ...result } = user;
     return result;
   }
 
   async findByEmail(email: string) {
-    return (this.prisma as any).user.findUnique({
+    return this.prisma.user.findUnique({
       where: { email },
     });
   }
 
   async findOne(id: string) {
-    return (this.prisma as any).user.findUnique({
+    return this.prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
