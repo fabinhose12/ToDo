@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty({ example: 'Comprar café', description: 'Título da tarefa' })
@@ -16,5 +16,13 @@ export class CreateTaskDto {
   @IsString({ message: 'A prioridade precisa ser um texto' })
   @IsOptional()
   priority?: string;
+
+  @ApiProperty({ description: 'ID do utilizador que criou a tarefa' })
+  @IsUUID('4', { message: 'authorId precisa ser um UUID válido' })
+  authorId: string;
+
+  @ApiProperty({ description: 'ID do utilizador ao qual a tarefa foi atribuída' })
+  @IsUUID('4', { message: 'assignedToId precisa ser um UUID válido' })
+  assignedToId: string;
 
 }

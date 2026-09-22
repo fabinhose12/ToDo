@@ -1,4 +1,4 @@
-npx prisma migrate dev --name add_users_and_relationsgenerator client {
+generator client {
   provider = "prisma-client-js"
 }
 
@@ -14,7 +14,6 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
 
   // Relacionamentos:
   
