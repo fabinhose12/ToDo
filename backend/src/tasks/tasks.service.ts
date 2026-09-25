@@ -7,7 +7,6 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  // Definição dos campos do utilizador que queremos expor (ocultando a password)
   private readonly userSelect = {
     select: {
       id: true,
@@ -15,6 +14,16 @@ export class TasksService {
       email: true,
     },
   };
+
+  async create(createTaskDto: CreateTaskDto) {
+    return this.prisma.task.create({
+      data: createTaskDto,
+      include: {
+        author: this.userSelect,
+        assignedTo: this.userSelect,
+      },
+    });
+  }
 
   async findAll() {
     return this.prisma.task.findMany({
@@ -38,9 +47,30 @@ export class TasksService {
     });
 
     if (!task) {
-      throw new NotFoundException(`Tarefa com o ID "${id}" não foi encontrada.`);
+      throw new NotFoundException(`Tarefa com o ID ${id} não encontrada.`);
     }
 
     return task;
+  }
+
+  async update(id: string, updateTaskDto: UpdateTaskDto) {
+    await this.findOne(id); // Garante que a tarefa existe antes de atualizar
+
+    return this.prisma.task.update({
+      where: { id },
+      data: updateTaskDto,
+      include: {
+        author: this.userSelect,
+        assignedTo: this.userSelect,
+      },
+    });
+  }
+
+  async remove(id: string) {
+    await this.findOne(id); 
+
+    return this.prisma.task.delete({
+      where: { id },
+    });
   }
 }
