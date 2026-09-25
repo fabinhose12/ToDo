@@ -7,42 +7,40 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createTaskDto: CreateTaskDto) {
-    return this.prisma.task.create({
-      data: createTaskDto,
-    });
-  }
+  // Definição dos campos do utilizador que queremos expor (ocultando a password)
+  private readonly userSelect = {
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+  };
 
   async findAll() {
     return this.prisma.task.findMany({
-      orderBy: { createdAt: 'desc' },
+      include: {
+        author: this.userSelect,
+        assignedTo: this.userSelect,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
   async findOne(id: string) {
     const task = await this.prisma.task.findUnique({
       where: { id },
+      include: {
+        author: this.userSelect,
+        assignedTo: this.userSelect,
+      },
     });
 
     if (!task) {
-      throw new NotFoundException(`Tarefa com ID ${id} não encontrada`);
+      throw new NotFoundException(`Tarefa com o ID "${id}" não foi encontrada.`);
     }
 
     return task;
-  }
-
-  async update(id: string, updateTaskDto: UpdateTaskDto) {
-    await this.findOne(id); // Garante que a tarefa existe antes de atualizar
-    return this.prisma.task.update({
-      where: { id },
-      data: updateTaskDto,
-    });
-  }
-
-  async remove(id: string) {
-    await this.findOne(id); // Garante que a tarefa existe antes de deletar
-    return this.prisma.task.delete({
-      where: { id },
-    });
   }
 }
