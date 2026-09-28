@@ -22,15 +22,16 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Post()
-  create(@Request() req: any, @Body() createTaskDto: CreateTaskDto) {
-    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+@Post()
+create(@Request() req: any, @Body() createTaskDto: CreateTaskDto) {
+  // Extrai o ID do utilizador autenticado presente no token JWT
+  const userId = req.user?.id || req.user?.userId || req.user?.sub;
 
-    return this.tasksService.create({
-      ...createTaskDto,
-      authorId: userId,
-    });
-  }
+  return this.tasksService.create({
+    ...createTaskDto,
+    authorId: userId,
+  });
+}
 
   @Get()
   findAll() {

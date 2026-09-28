@@ -17,13 +17,12 @@ export class CreateTaskDto {
   @IsOptional()
   priority?: string;
 
-
   @IsUUID('4', { message: 'authorId precisa ser um UUID válido' })
   @IsOptional()
-  authorId: string;
+  authorId?: string;
 
-  @ApiProperty({ description: 'ID do utilizador ao qual a tarefa foi atribuída' })
+  @ApiPropertyOptional({ description: 'ID do utilizador ao qual a tarefa foi atribuída' }) // ◄── Alterado para opcional no Swagger
   @IsUUID('4', { message: 'assignedToId precisa ser um UUID válido' })
-  assignedToId: string;
-
+  @IsOptional() 
+  assignedToId?: string;
 }

@@ -39,6 +39,6 @@ model Task {
 
   // A quem a tarefa foi atribuída
 
-  assignedToId String
-  assignedTo   User   @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
 }

@@ -14,14 +14,16 @@ export class TasksService {
       email: true,
     },
   };
-  
+
   async create(data: CreateTaskDto & { authorId: string }) {
+    const { title, description, assignedToId, authorId } = data;
+
     return this.prisma.task.create({
       data: {
-        title: data.title,
-        description: data.description,
-        authorId: data.authorId,
-        assignedToId: data.assignedToId ?? undefined,
+        title,
+        authorId,
+        ...(description !== undefined && { description }),
+        ...(assignedToId !== undefined && { assignedToId }),
       },
       include: {
         author: this.userSelect,
@@ -61,9 +63,15 @@ export class TasksService {
   async update(id: string, updateTaskDto: UpdateTaskDto) {
     await this.findOne(id);
 
+    const { title, description, assignedToId } = updateTaskDto;
+
     return this.prisma.task.update({
       where: { id },
-      data: updateTaskDto,
+      data: {
+        ...(title && { title }),
+        ...(description !== undefined && { description }),
+        ...(assignedToId !== undefined && { assignedToId }),
+      },
       include: {
         author: this.userSelect,
         assignedTo: this.userSelect,
