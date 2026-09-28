@@ -3,22 +3,16 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: todo_backend
+    restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
+    environment:
+      DATABASE_URL: 'file:./dev.db'
+      JWT_SECRET: 'suaChaveSecretaAqui'
+      JWT_EXPIRES_IN: '1d'
     volumes:
-      # Persiste o arquivo do banco SQLite na sua máquina
-      - ./backend/prisma:/usr/src/app/prisma
-    environment:
-      - DATABASE_URL=file:./dev.db
-      - PORT=3000
+      - sqlite_data:/usr/src/app/prisma
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3001:3000" # Mapeia a porta 3000 do container para a 3001 no seu PC
-    depends_on:
-      - backend
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
+volumes:
+  sqlite_data:
