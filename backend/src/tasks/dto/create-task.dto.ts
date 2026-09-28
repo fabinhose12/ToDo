@@ -17,8 +17,9 @@ export class CreateTaskDto {
   @IsOptional()
   priority?: string;
 
-  @ApiProperty({ description: 'ID do utilizador que criou a tarefa' })
+
   @IsUUID('4', { message: 'authorId precisa ser um UUID válido' })
+  @IsOptional()
   authorId: string;
 
   @ApiProperty({ description: 'ID do utilizador ao qual a tarefa foi atribuída' })

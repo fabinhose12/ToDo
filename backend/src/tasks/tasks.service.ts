@@ -14,10 +14,15 @@ export class TasksService {
       email: true,
     },
   };
-
-  async create(createTaskDto: CreateTaskDto) {
+  
+  async create(data: CreateTaskDto & { authorId: string }) {
     return this.prisma.task.create({
-      data: createTaskDto,
+      data: {
+        title: data.title,
+        description: data.description,
+        authorId: data.authorId,
+        assignedToId: data.assignedToId ?? undefined,
+      },
       include: {
         author: this.userSelect,
         assignedTo: this.userSelect,
@@ -54,7 +59,7 @@ export class TasksService {
   }
 
   async update(id: string, updateTaskDto: UpdateTaskDto) {
-    await this.findOne(id); // Garante que a tarefa existe antes de atualizar
+    await this.findOne(id);
 
     return this.prisma.task.update({
       where: { id },
@@ -67,7 +72,7 @@ export class TasksService {
   }
 
   async remove(id: string) {
-    await this.findOne(id); 
+    await this.findOne(id);
 
     return this.prisma.task.delete({
       where: { id },

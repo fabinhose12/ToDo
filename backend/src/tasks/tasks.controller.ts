@@ -7,20 +7,29 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@UseGuards(JwtAuthGuard) //  Protege todas as rotas do controller
+@ApiTags('tasks')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  create(@Request() req: any, @Body() createTaskDto: CreateTaskDto) {
+    const userId = req.user?.id || req.user?.userId || req.user?.sub;
+
+    return this.tasksService.create({
+      ...createTaskDto,
+      authorId: userId,
+    });
   }
 
   @Get()

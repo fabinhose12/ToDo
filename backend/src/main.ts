@@ -21,6 +21,15 @@ async function bootstrap() {
     .setTitle('To-Do List API')
     .setDescription('Documentação da API de Tarefas em NestJS')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
