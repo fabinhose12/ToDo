@@ -1,25 +1,22 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import type { StringValue } from 'ms';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
+import { UsersModule } from '../users/users.module'
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secretKey',
-      signOptions: {
-        expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as StringValue,
-      },
+      secret: process.env.JWT_SECRET || 'secretKeySuperSecreta',
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  exports: [AuthService, PassportModule, JwtModule], // Exporta para os outros módulos poderem usar o Guard
 })
 export class AuthModule {}
