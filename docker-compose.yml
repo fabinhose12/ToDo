@@ -1,3 +1,4 @@
+
 services:
   backend:
     build:
@@ -9,10 +10,23 @@ services:
       - '3000:3000'
     environment:
       DATABASE_URL: 'file:./dev.db'
-      JWT_SECRET: 'suaChaveSecretaAqui'
+      JWT_SECRET: 'sua_chave_secreta_super_segura_aqui'
       JWT_EXPIRES_IN: '1d'
     volumes:
       - sqlite_data:/usr/src/app/prisma
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: todo_frontend
+    restart: always
+    ports:
+      - '3001:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: 'http://localhost:3000'
+    depends_on:
+      - backend
 
 volumes:
   sqlite_data:
