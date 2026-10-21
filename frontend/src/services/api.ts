@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://todo-backend-direto.onrender.com',
+  baseURL: 'https://todo-backend-direto.onrender.com',
 });
 
 // Interceptor para injetar o token JWT automaticamente em cada requisição
