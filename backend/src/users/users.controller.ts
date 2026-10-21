@@ -1,42 +1,82 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Injectable()
+export class UsersService {
+  constructor(private prisma: PrismaService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+    return this.prisma.user.create({
+      data: {
+        name: createUserDto.name,
+        email: createUserDto.email,
+        password: hashedPassword,
+      },
+    });
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      },
+    });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  async findOne(id: string) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      },
+    });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const dataToUpdate: any = { ...updateUserDto };
+
+    if (updateUserDto.password) {
+      dataToUpdate.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.user.delete({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
   }
 }
